@@ -6,7 +6,12 @@ $(document).ready(function() {
 	var player = models.player;
 	var en_api_key = '52HAPO5HSDDRQLLJT';
     var currentTrack = player.track;
-    var currentHTML = document.getElementById('np');
+
+    $.ajaxSetup({traditional: true, cache: true});
+
+	var currentSongTitleHTML = document.getElementById('current-song-title');
+    var currentArtistNameHTML = document.getElementById('current-artist-name');
+    var currentAlbumartHTML = document.getElementById('albumart');
     var sampledSourceTracksHTML = document.getElementById('sampled-source-tracks');
     var sampledDerivativeTracksHTML = document.getElementById('sampled-derivative-tracks');
     var coveredSourceTracksHTML = document.getElementById('covered-source-tracks');
@@ -44,11 +49,15 @@ $(document).ready(function() {
     function updatePageWithTrackDetails() {
         currentTrack = player.track;
         if (currentTrack == null) {
-            currentHTML.innerHTML = 'No track currently playing';
+            currentSongTitleHTML.innerHTML = 'No track currently playing';
+            currentArtistNameHTML.innerHTML = '';
         } else {
-            currentHTML.innerHTML = 'Now playing: ' + currentTrack;
+            console.log(currentTrack);
+            currentSongTitleHTML.innerHTML = currentTrack.name;
+            currentArtistNameHTML.innerHTML = currentTrack.artists[0].name;
+            addPlayer(currentTrack, currentAlbumartHTML);
         }
-    }    
+    }
 
     function getTrackFromWhoSampled(searchType, artist, track, callback) {
         var results = {
@@ -133,27 +142,34 @@ $(document).ready(function() {
                 // console.log(track.uri, track.name);
                 // console.log(track);
 
-                // create playlist with track
-                var single_track_playlist = new models.Playlist();
-                single_track_playlist.add(track);
-
-                // create single track player
-                var single_track_player = new views.Player();
-                single_track_player.track = null; // Don't play the track right away
-                single_track_player.context = single_track_playlist;
-
-                // wrap in div with name, etc
-                var trackDiv = document.createElement('div');
-                trackDiv.appendChild(single_track_player.node);
-                var nameSpan = document.createElement('span');
-                nameSpan.innerHTML = track.artists[0].name + ' - ' + track.name;
-                trackDiv.appendChild(nameSpan);
-
-                container.appendChild(trackDiv);
-                // console.log(trackDiv);
+                addPlayer(track, container, true);
             }
         });
 
         search.appendNext();
+    }
+
+    function addPlayer(track, container, noName) {
+        // create playlist with track
+        var single_track_playlist = new models.Playlist();
+        single_track_playlist.add(track);
+
+        // create single track player
+        var single_track_player = new views.Player();
+        single_track_player.track = null; // Don't play the track right away
+        single_track_player.context = single_track_playlist;
+
+        // wrap in div
+        var trackDiv = document.createElement('div');
+        trackDiv.appendChild(single_track_player.node);
+
+        if (noName) {
+            var nameSpan = document.createElement('span');
+            nameSpan.innerHTML = track.artists[0].name + ' - ' + track.name;
+            trackDiv.appendChild(nameSpan);
+        }
+
+        container.appendChild(trackDiv);
+        // console.log(trackDiv);
     }
 });
