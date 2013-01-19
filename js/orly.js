@@ -7,8 +7,6 @@ $(document).ready(function() {
 	var en_api_key = '52HAPO5HSDDRQLLJT';
     var currentTrack = player.track;
 
-    $.ajaxSetup({traditional: true, cache: true});
-
 	var currentSongTitleHTML = document.getElementById('current-song-title');
     var currentArtistNameHTML = document.getElementById('current-artist-name');
     var currentAlbumartHTML = document.getElementById('albumart');
@@ -18,15 +16,15 @@ $(document).ready(function() {
     var coveredDerivativeTracksHTML = document.getElementById('covered-derivative-tracks');
 
     $.ajaxSetup({traditional: true, cache: true});
-
+    
     models.player.observe(models.EVENT.CHANGE, function(event) {
         if (event.data.curtrack == true) {
-            updatePageWithTrackDetails();
+            // updatePageWithTrackDetails();
         }
     });
 
     models.application.observe(models.EVENT.ACTIVATE, function(event) {
-        updatePageWithTrackDetails();
+        // updatePageWithTrackDetails();
     });
 
     $('#get-playing-track').click(function(e){
@@ -38,12 +36,12 @@ $(document).ready(function() {
             currentTrack.name,
             handleFromWhoSampled('sample', sampledSourceTracksHTML, sampledDerivativeTracksHTML)
         );
-        // getTrackFromWhoSampled(
-        //     'cover',
-        //     currentTrack.artists[0].name,
-        //     currentTrack.name,
-        //     handleFromWhoSampled('cover', coveredSourceTracksHTML, coveredDerivativeTracksHTML)
-        // );
+        getTrackFromWhoSampled(
+            'cover',
+            currentTrack.artists[0].name,
+            currentTrack.name,
+            handleFromWhoSampled('cover', coveredSourceTracksHTML, coveredDerivativeTracksHTML)
+        );
     });
 
     function updatePageWithTrackDetails() {
@@ -53,7 +51,7 @@ $(document).ready(function() {
             currentArtistNameHTML.innerHTML = '';
             currentAlbumartHTML.innerHTML = '';
         } else {
-            console.log(currentTrack);
+            // console.log(currentTrack);
             currentSongTitleHTML.innerHTML = currentTrack.name;
             currentArtistNameHTML.innerHTML = currentTrack.artists[0].name;
             currentAlbumartHTML.innerHTML = '';
@@ -77,7 +75,7 @@ $(document).ready(function() {
 
 
         var url = 'http://www.whosampled.com/search/' + searchType + 's/?q=' + searchArtist + '%20' + searchTrack;
-        // console.log(url);
+        console.log(url);
 
         $.get(url, function(data) {
             var searchResults = $(data).find('#mainSectionLeft')[0];
@@ -121,8 +119,9 @@ $(document).ready(function() {
     function handleFromWhoSampled(relationType, sourcesContainer, derivativesContainer) {
         return function(data) {
             // console.log(data);
-            // sourcesContainer.innerHTML = '';
-            // derivativesContainer.innerHTML = '';
+            
+            clearResults(relationType);
+
             var derivatives = data.derivative;
             var sources = data.source;
             for (var track in derivatives)
@@ -175,5 +174,23 @@ $(document).ready(function() {
 
         container.appendChild(trackDiv);
         // console.log(trackDiv);
+    }
+
+    function clearResults(relationType) {
+        if (relationType == 'sample') {
+            sampledSourceTracksHTML.innerHTML = '';
+            try {
+                sampledDerivativeTracksHTML.innerHTML = '';
+            } catch (e) {
+                console.log(e);
+            }
+        } else if (relationType == 'cover') {
+            coveredSourceTracksHTML.innerHTML = '';
+            try {
+                coveredDerivativeTracksHTML.innerHTML = '';    
+            } catch (e) {
+                console.log(e);
+            }
+        }
     }
 });
