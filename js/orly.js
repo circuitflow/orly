@@ -165,6 +165,7 @@ $(document).ready(function() {
             if (results.length > 0) {
                 var track = results[0];
                 console.log(track.uri, track.name);
+                console.log(track);
 
                 var single_track_playlist = new models.Playlist();
                 single_track_playlist.add(track);
@@ -180,7 +181,7 @@ $(document).ready(function() {
     }
 
     function artistAndTrack(searchResult) {
-        var at = searchResult.split(' sample of ')[1].split("'");
+        var at = searchResult.split("'");
         return [at.shift(), at.join("'").substring(2)];
     }
 });
