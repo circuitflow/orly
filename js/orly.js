@@ -4,7 +4,7 @@ $(document).ready(function() {
 	var models = sp.require("$api/models");
 	var views = sp.require('$api/views');
 	var player = models.player;
-	var en_api_key = '8MF4B60ASI9QKWMRJ';
+	var en_api_key = '52HAPO5HSDDRQLLJT';
 
     $.ajaxSetup({traditional: true, cache: true});
 
@@ -12,21 +12,24 @@ $(document).ready(function() {
 	var currentTrack = player.track;
 
 	var currentHTML = document.getElementById('np');
+    var sampledTracksHTML = document.getElementById('sampled-tracks');
+
 	if (currentTrack == null) {
 		currentHTML.innerHTML = 'No track currently playing';
 	} else {
+        console.log(currentTrack);
 		currentHTML.innerHTML = 'Now playing: ' + currentTrack;
 	}
-    
+
     // getWhoSampledArtistFromEchoNest(en_api_key, currentTrack.artists[0].name);
     // getWhoSampledTrackFromEchoNest(en_api_key, currentTrack.artists[0], currentTrack.name);
-    
-    getTrackFromWhoSampled('sample', currentTrack.artists[0].name, currentTrack.name);
-    getTrackFromWhoSampled('cover', currentTrack.artists[0].name, currentTrack.name);
-    
-    function getTrackFromWhoSampled(searchType, artist, track) {
+
+    getTrackFromWhoSampled('sample', currentTrack.artists[0].name, currentTrack.name, handleFromWhoSampled('sample'));
+    getTrackFromWhoSampled('cover', currentTrack.artists[0].name, currentTrack.name, handleFromWhoSampled('cover'));
+
+    function getTrackFromWhoSampled(searchType, artist, track, callback) {
         var results = {
-            'source':[], 
+            'source':[],
             'derivative':[],
             'unknown':[],
             'searchType': searchType
@@ -35,18 +38,19 @@ $(document).ready(function() {
         // console.log(artist);
         // console.log(track);
 
-        var searchArtist = encodeURI($.trim(artist.replace('&apos;', "'").replace(/[^a-zA-Z0-9-_ ]/g, '').split('-')[0])); 
+        var searchArtist = encodeURI($.trim(artist.replace('&apos;', "'").replace(/[^a-zA-Z0-9-_ ]/g, '').split('-')[0]));
         var searchTrack = encodeURI($.trim(track.replace('&apos;', "'").replace(/[^a-zA-Z0-9-_ ]/g, '').split('-')[0]));
 
+
         var url = 'http://www.whosampled.com/search/' + searchType + 's/?q=' + searchArtist + '%20' + searchTrack;
-        // console.log(url);
+        console.log(url);
 
         $.get(url, function(data) {
             var searchResults = $(data).find('#mainSectionLeft')[0];
             searchResults = $(searchResults).find('div')[5]; // innerContent2
             searchResults = $(searchResults).find('tbody')[0];
             searchResults = $(searchResults).find('tr');
-            
+
             $(searchResults).each(function(){
                 var relation = {};
 
@@ -57,29 +61,47 @@ $(document).ready(function() {
                 if (searchResult) {
                     var splitKey = searchType + ' of'
                     searchResult = searchResult.split(splitKey);
-                    
-                    var derivative = searchResult[0].split("'s");
+
+                    var derivative = searchResult[0].split(/'s/);
                     relation['derivativeArtist'] = $.trim(derivative.shift().split('feat.')[0]);
                     relation['derivativeTrack'] = $.trim(derivative.join("'s"));
-                    
-                    var source = searchResult[1].split("'s");
+
+                    var source = searchResult[1].split(/'s/);
                     relation['sourceArtist'] = $.trim(source.shift().split('feat.')[0]);
                     relation['sourceTrack'] = $.trim(source.join("'s"));
 
-                    if (artist == relation.sourceArtist) {
-                        results.source.push(relation);    
-                    } else if (artist == relation.derivativeArtist) {
+                    if (relation.sourceArtist.indexOf(artist) > -1 || artist.indexOf(relation.sourceArtist) > -1) {
+                        results.source.push(relation);
+                    } else if (relation.derivativeArtist.indexOf(artist) > -1 || artist.indexOf(relation.derivativeArtist) > -1) {
                         results.derivative.push(relation);
                     } else {
                         results.unknown.push(relation);
                     }
                 }
             });
-            console.log(results);
+            if ($.isFunction(callback)) callback(results);
         });
+
     }
 
-    
+    function handleFromWhoSampled(relationType) {
+        return function(data) {
+            console.log(data);
+            var derivatives = data.derivative;
+            var sources = data.source;
+            for (var track in derivatives)
+                searchForTrack(derivatives[track]['sourceArtist'], derivatives[track]['sourceTrack']);
+            for (var track in sources)
+                searchForTrack(sources[track]['derivativeArtist'], sources[track]['derivativeTrack']);
+        }
+    }
+
+    function getCoveredTrackFromWhoSampled(artist, track) {
+        var url = 'http://www.whosampled.com/search/covers/?q=' + track;
+        console.log(url);
+    }
+
+
 	function getWhoSampledArtistFromEchoNest(api_key, artist) {
         var url = 'http://developer.echonest.com/api/v4/artist/search?api_key=' + api_key + '&callback=?';
         $.getJSON(url,
@@ -135,5 +157,32 @@ $(document).ready(function() {
             error("Unexpected response from server");
         }
         return false;
+    }
+
+    function searchForTrack(artist, track) {
+        var searchString = artist + ' - ' + track;
+        console.log("Search for", searchString);
+        var search = new models.Search(searchString);
+        search.localResults = models.LOCALSEARCHRESULTS.APPEND;
+
+        search.observe(models.EVENT.CHANGE, function() {
+            var results = search.tracks;
+            var fragment = document.createDocumentFragment();
+            if (results.length > 0) {
+                var track = results[0];
+                console.log(track.uri, track.name);
+                console.log(track);
+
+                var single_track_playlist = new models.Playlist();
+                single_track_playlist.add(track);
+                var single_track_player = new views.Player();
+                single_track_player.track = null; // Don't play the track right away
+                single_track_player.context = single_track_playlist;
+
+                sampledTracksHTML.appendChild(single_track_player.node);
+            }
+        });
+
+        search.appendNext();
     }
 });
