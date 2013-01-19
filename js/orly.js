@@ -165,24 +165,30 @@ $(document).ready(function() {
 
         // wrap in div with name, etc
         var trackDiv = document.createElement('div');
-        var trackInfo = document.createElement('div');
+        
         
 
         trackDiv.appendChild(single_track_player.node);
 
         if (hasName) {
+            var trackInfo = document.createElement('div');
             var nameSpan = document.createElement('span');
             nameSpan.innerHTML = '<b>' +track.artists[0].name + '</b><br>' + track.name;
             trackInfo.appendChild(nameSpan);
+            trackDiv.appendChild(trackInfo);
+            $(trackDiv).addClass('result');
+
+            container.appendChild(trackDiv);
+                        
+            var clearDiv = document.createElement('div');
+            $(clearDiv).addClass('clear');
+            container.appendChild(clearDiv);
+        }
+        else{
+            container.appendChild(trackDiv);
         }
 
-        trackDiv.appendChild(trackInfo);
-        $(trackDiv).addClass('result');
-        container.appendChild(trackDiv);
 
-        var clearDiv = document.createElement('div');
-        $(clearDiv).addClass('clear');
-        container.appendChild(clearDiv);
 
     }
 

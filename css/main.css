@@ -9,12 +9,16 @@ html,body{
 
 #wrapper{
 	padding: 20px;
+	box-sizing: border-box;
+	padding-bottom: 40px;
+	overflow: hidden;
 }
 
 header{
 	width: 100%;
 	height: 90px;
 	clear: none;
+	border-bottom: 1px dotted;
 }
 
 #logo{
@@ -54,18 +58,20 @@ header{
 
 #trackmeta{
 
+	line-height: 1;
+
 }
 
 #trackmeta h1{
-	font-size: 4em;
-	margin-bottom: 40px;
+	font-size: 4em; 
+	margin-bottom: 20px;
 }
 
-#trackmeta h2{
+#trackmeta p{
 	font-size: 3em;
 }
 
-#albumart{
+#albumart div:first-of-type{
 	width: 200px;
 	height: 200px;
 	
@@ -84,7 +90,6 @@ header{
 
 #results{
 	width: 100%;
-	background-color: gray;
 }
 
 #sampledby{
@@ -106,7 +111,7 @@ header{
 }
 
 
-.sp-player #bigart{
+.sp-player #albumart{
   display: block !important; 
   height: 100% !important; 
   width: 100% !important;
@@ -121,12 +126,19 @@ header{
 	height: auto;
 	text-align: top;
 	clear: none;
-
+	margin-top: 10px;
 }
 
 .result div{
 	float: left !important;
 	display: inline !important;
 	overflow: hidden;
+}
+
+.result div:last-child{
+	box-sizing: border-box;
+	padding-left: 5px;
+	clear: right;
+	width: 50%;
 }
 
