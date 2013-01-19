@@ -3,7 +3,12 @@
 		"en": "orly"
 	},
 	"AppIcon": {
-		"36x18": ""
+		"256x256": "img/Icon_256.png",
+		"128x128": "img/Icon_128.png",
+		"64x64": "img/Icon_64.png",
+		"32x32": "img/Icon_32.png",
+		"36x18": "img/Icon_18.png"
+
 	},
 	"AppName": {
 		"en": "orly"
