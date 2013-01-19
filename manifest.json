@@ -1,0 +1,29 @@
+{
+	"AppDescription": {
+		"en": "orly"
+	},
+	"AppIcon": {
+		"36x18": ""
+	},
+	"AppName": {
+		"en": "orly"
+	},
+	"BundleIdentifier": "orly",
+	"BundleType": "Application",
+	"BundleVersion": "0.1",
+	
+	"Dependencies": {
+	  "api": "0.2.3",
+	  "util": "0.1.0",
+	  "resources": "0.2.2"
+  },
+	"RequiredInterface": 1,
+	"RequiredPermissions": [
+	    "http://developer.echonest.com",
+	    "http://www.whosampled.com"
+	],
+	"SupportedLanguages": [
+		"en"
+	],
+	"VendorIdentifier": "com.orly"
+}
