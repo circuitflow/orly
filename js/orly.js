@@ -5,24 +5,40 @@ $(document).ready(function() {
 	var views = sp.require('$api/views');
 	var player = models.player;
 	var en_api_key = '52HAPO5HSDDRQLLJT';
-
-    $.ajaxSetup({traditional: true, cache: true});
-
-	// Get the track that is currently playing
-	var currentTrack = player.track;
-
-	var currentHTML = document.getElementById('np');
+    var currentTrack = player.track;
+    var currentHTML = document.getElementById('np');
     var sampledSourceTracksHTML = document.getElementById('sampled-source-tracks');
     var sampledDerivativeTracksHTML = document.getElementById('sampled-derivative-tracks');
     var coveredSourceTracksHTML = document.getElementById('covered-source-tracks');
     var coveredDerivativeTracksHTML = document.getElementById('covered-derivative-tracks');
 
-	if (currentTrack == null) {
-		currentHTML.innerHTML = 'No track currently playing';
-	} else {
-        console.log(currentTrack);
-		currentHTML.innerHTML = 'Now playing: ' + currentTrack;
-	}
+    $.ajaxSetup({traditional: true, cache: true});
+
+    updatePageWithTrackDetails();
+
+    models.player.observe(models.EVENT.CHANGE, function(event) {
+        if (event.data.curtrack == true) {
+            // updatePageWithTrackDetails();
+        }
+    });
+
+    models.application.observe(models.EVENT.ACTIVATE, function(event) {
+        updatePageWithTrackDetails();
+    });
+
+    $('#get-playing-track').click(function(e){
+        console.log("button click");
+        updatePageWithTrackDetails();
+    });
+
+    function updatePageWithTrackDetails() {
+        currentTrack = player.track;
+        if (currentTrack == null) {
+            currentHTML.innerHTML = 'No track currently playing';
+        } else {
+            currentHTML.innerHTML = 'Now playing: ' + currentTrack;
+        }
+    }
 
     // getWhoSampledArtistFromEchoNest(en_api_key, currentTrack.artists[0].name);
     // getWhoSampledTrackFromEchoNest(en_api_key, currentTrack.artists[0], currentTrack.name);
@@ -174,7 +190,7 @@ $(document).ready(function() {
 
     function searchForTrack(artist, track, container) {
         var searchString = artist + ' - ' + track;
-        console.log("Search for", searchString);
+        // console.log("Search for", searchString);
         var search = new models.Search(searchString);
         search.localResults = models.LOCALSEARCHRESULTS.APPEND;
 
@@ -183,8 +199,8 @@ $(document).ready(function() {
             var fragment = document.createDocumentFragment();
             if (results.length > 0) {
                 var track = results[0];
-                console.log(track.uri, track.name);
-                console.log(track);
+                // console.log(track.uri, track.name);
+                // console.log(track);
 
                 // create playlist with track
                 var single_track_playlist = new models.Playlist();
@@ -203,7 +219,7 @@ $(document).ready(function() {
                 trackDiv.appendChild(nameSpan);
 
                 container.appendChild(trackDiv);
-                console.log(trackDiv);
+                // console.log(trackDiv);
             }
         });
 
