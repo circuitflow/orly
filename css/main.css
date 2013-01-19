@@ -69,9 +69,7 @@ header{
 }
 
 #trackmeta{
-
 	line-height: 1;
-
 }
 
 #trackmeta h1{
@@ -87,7 +85,6 @@ header{
 #albumart div:first-of-type{
 	width: 200px;
 	height: 200px;
-	
 }
 
 .smallalbum{
@@ -121,7 +118,6 @@ header{
 .col{
 	width: 50%;
 	display: inline;
-
 }
 
 .clear{
@@ -166,4 +162,11 @@ header{
 
 .left{
 	float: left;
+}
+
+.section-header {
+	width: 75%;
+	padding-top: 15px;
+	margin-top: 15px;
+	border-bottom: 1px dotted;
 }

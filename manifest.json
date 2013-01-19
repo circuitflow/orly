@@ -24,7 +24,6 @@
   },
 	"RequiredInterface": 1,
 	"RequiredPermissions": [
-	    "http://developer.echonest.com",
 	    "http://www.whosampled.com"
 	],
 	"SupportedLanguages": [

@@ -14,7 +14,6 @@
                 <img  id="logo" src="img/logo.png" alt="ORLY">
                 <div id="analyzebutton">
                     <button class="sp-button" id="get-playing-track">Get playing track</button>
-                    <div id="np"></div>
                 </div>
             </header>
             <div class="clear"></div>
@@ -32,31 +31,18 @@
             </div>
             <div id="results">
                 <div id="sampledby" class="col">
-                    <h2>Sampled by:</h2>
-                    
-                    <div id="sampled-derivative-tracks">
-                      
-                    </div>
-
-                </div>
-                <div id="issampled" class="col">
-                    <h2>Borrows from:</h2>
-                        <div id="sampled-source-tracks"></div>
-                </div>
-            </div>
-            <br>
-            <!--
-            <div class="section">
-                <div class="html-snippet" data-container="html">
-                    
-                    <h1>Covered</h1>
-                    <h2>This covered</h2>
-                    <div id="covered-source-tracks"></div>
-                    <h2>Covered this</h2>
+                    <div class="section-header"><h2>Sampled by</h2></div>
+                    <div id="sampled-derivative-tracks"></div>
+                    <div class="section-header"><h2>Covered by</h2></div>
                     <div id="covered-derivative-tracks"></div>
                 </div>
+                <div id="issampled" class="col">
+                    <div class="section-header"><h2>Borrows from</h2></div>
+                    <div id="sampled-source-tracks"></div>
+                    <div class="section-header"><h2>Covers</h2></div>
+                    <div id="covered-source-tracks"></div>
+                </div>
             </div>
-            -->
         </div>
         <script src="/js/jquery.min.js"></script>
         <script src="/js/orly.js"></script>
