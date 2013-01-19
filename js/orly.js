@@ -24,10 +24,10 @@ $(document).ready(function() {
     // getWhoSampledArtistFromEchoNest(en_api_key, currentTrack.artists[0].name);
     // getWhoSampledTrackFromEchoNest(en_api_key, currentTrack.artists[0], currentTrack.name);
 
-    getTrackFromWhoSampled('sample', currentTrack.artists[0].name, currentTrack.name);
-    getTrackFromWhoSampled('cover', currentTrack.artists[0].name, currentTrack.name);
+    getTrackFromWhoSampled('sample', currentTrack.artists[0].name, currentTrack.name, handleFromWhoSampled('sample'));
+    getTrackFromWhoSampled('cover', currentTrack.artists[0].name, currentTrack.name, handleFromWhoSampled('cover'));
 
-    function getTrackFromWhoSampled(searchType, artist, track) {
+    function getTrackFromWhoSampled(searchType, artist, track, callback) {
         var results = {
             'source':[],
             'derivative':[],
@@ -43,7 +43,7 @@ $(document).ready(function() {
 
 
         var url = 'http://www.whosampled.com/search/' + searchType + 's/?q=' + searchArtist + '%20' + searchTrack;
-        // console.log(url);
+        console.log(url);
 
         $.get(url, function(data) {
             var searchResults = $(data).find('#mainSectionLeft')[0];
@@ -62,32 +62,38 @@ $(document).ready(function() {
                     var splitKey = searchType + ' of'
                     searchResult = searchResult.split(splitKey);
 
-                    var derivative = searchResult[0].split("'s");
+                    var derivative = searchResult[0].split(/'s/);
                     relation['derivativeArtist'] = $.trim(derivative.shift().split('feat.')[0]);
                     relation['derivativeTrack'] = $.trim(derivative.join("'s"));
 
-                    var source = searchResult[1].split("'s");
+                    var source = searchResult[1].split(/'s/);
                     relation['sourceArtist'] = $.trim(source.shift().split('feat.')[0]);
                     relation['sourceTrack'] = $.trim(source.join("'s"));
 
-                    if (artist == relation.sourceArtist) {
+                    if (relation.sourceArtist.indexOf(artist) > -1 || artist.indexOf(relation.sourceArtist) > -1) {
                         results.source.push(relation);
-                    } else if (artist == relation.derivativeArtist) {
+                    } else if (relation.derivativeArtist.indexOf(artist) > -1 || artist.indexOf(relation.derivativeArtist) > -1) {
                         results.derivative.push(relation);
                     } else {
                         results.unknown.push(relation);
                     }
                 }
             });
-            console.log(results);
+            if ($.isFunction(callback)) callback(results);
         });
 
     }
 
-    function handleFromWhoSampled(data) {
-        console.log(data);
-        for (var track in data)
-            searchForTrack(data[track][0], data[track][1]);
+    function handleFromWhoSampled(relationType) {
+        return function(data) {
+            console.log(data);
+            var derivatives = data.derivative;
+            var sources = data.source;
+            for (var track in derivatives)
+                searchForTrack(derivatives[track]['sourceArtist'], derivatives[track]['sourceTrack']);
+            for (var track in sources)
+                searchForTrack(sources[track]['derivativeArtist'], sources[track]['derivativeTrack']);
+        }
     }
 
     function getCoveredTrackFromWhoSampled(artist, track) {
@@ -178,10 +184,5 @@ $(document).ready(function() {
         });
 
         search.appendNext();
-    }
-
-    function artistAndTrack(searchResult) {
-        var at = searchResult.split("'");
-        return [at.shift(), at.join("'").substring(2)];
     }
 });
