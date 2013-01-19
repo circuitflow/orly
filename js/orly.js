@@ -152,7 +152,7 @@ $(document).ready(function() {
         search.appendNext();
     }
 
-    function addPlayer(track, container, noName) {
+    function addPlayer(track, container, hasName) {
         // create playlist with track
         var single_track_playlist = new models.Playlist();
         single_track_playlist.add(track);
@@ -166,21 +166,16 @@ $(document).ready(function() {
         // wrap in div with name, etc
         var trackDiv = document.createElement('div');
         var trackInfo = document.createElement('div');
-        var artistSpan = document.createElement('p');
-        var trackSpan = document.createElement('p');
+        
 
         trackDiv.appendChild(single_track_player.node);
 
-        if (noName) {
+        if (hasName) {
             var nameSpan = document.createElement('span');
-            nameSpan.innerHTML = track.artists[0].name + ' - ' + track.name;
-            trackDiv.appendChild(nameSpan);
+            nameSpan.innerHTML = '<b>' +track.artists[0].name + '</b><br>' + track.name;
+            trackInfo.appendChild(nameSpan);
         }
 
-        trackSpan.innerHTML = track.name;
-        artistSpan.innerHTML = track.artists[0].name;
-        trackInfo.appendChild(artistSpan);
-        trackInfo.appendChild(trackSpan);
         trackDiv.appendChild(trackInfo);
         $(trackDiv).addClass('result');
         container.appendChild(trackDiv);
