@@ -4,7 +4,7 @@ $(document).ready(function() {
 	var models = sp.require("$api/models");
 	var views = sp.require('$api/views');
 	var player = models.player;
-	var en_api_key = '8MF4B60ASI9QKWMRJ';
+	var en_api_key = '52HAPO5HSDDRQLLJT';
 
     $.ajaxSetup({traditional: true, cache: true});
 
@@ -12,21 +12,24 @@ $(document).ready(function() {
 	var currentTrack = player.track;
 
 	var currentHTML = document.getElementById('np');
+    var sampledTracksHTML = document.getElementById('sampled-tracks');
+
 	if (currentTrack == null) {
 		currentHTML.innerHTML = 'No track currently playing';
 	} else {
+        console.log(currentTrack);
 		currentHTML.innerHTML = 'Now playing: ' + currentTrack;
 	}
-    
+
     // getWhoSampledArtistFromEchoNest(en_api_key, currentTrack.artists[0].name);
     // getWhoSampledTrackFromEchoNest(en_api_key, currentTrack.artists[0], currentTrack.name);
-    
+
     getTrackFromWhoSampled('sample', currentTrack.artists[0].name, currentTrack.name);
     getTrackFromWhoSampled('cover', currentTrack.artists[0].name, currentTrack.name);
-    
+
     function getTrackFromWhoSampled(searchType, artist, track) {
         var results = {
-            'source':[], 
+            'source':[],
             'derivative':[],
             'unknown':[],
             'searchType': searchType
@@ -35,8 +38,9 @@ $(document).ready(function() {
         // console.log(artist);
         // console.log(track);
 
-        var searchArtist = encodeURI($.trim(artist.replace('&apos;', "'").replace(/[^a-zA-Z0-9-_ ]/g, '').split('-')[0])); 
+        var searchArtist = encodeURI($.trim(artist.replace('&apos;', "'").replace(/[^a-zA-Z0-9-_ ]/g, '').split('-')[0]));
         var searchTrack = encodeURI($.trim(track.replace('&apos;', "'").replace(/[^a-zA-Z0-9-_ ]/g, '').split('-')[0]));
+
 
         var url = 'http://www.whosampled.com/search/' + searchType + 's/?q=' + searchArtist + '%20' + searchTrack;
         // console.log(url);
@@ -46,7 +50,7 @@ $(document).ready(function() {
             searchResults = $(searchResults).find('div')[5]; // innerContent2
             searchResults = $(searchResults).find('tbody')[0];
             searchResults = $(searchResults).find('tr');
-            
+
             $(searchResults).each(function(){
                 var relation = {};
 
@@ -57,17 +61,17 @@ $(document).ready(function() {
                 if (searchResult) {
                     var splitKey = searchType + ' of'
                     searchResult = searchResult.split(splitKey);
-                    
+
                     var derivative = searchResult[0].split("'s");
                     relation['derivativeArtist'] = $.trim(derivative.shift().split('feat.')[0]);
                     relation['derivativeTrack'] = $.trim(derivative.join("'s"));
-                    
+
                     var source = searchResult[1].split("'s");
                     relation['sourceArtist'] = $.trim(source.shift().split('feat.')[0]);
                     relation['sourceTrack'] = $.trim(source.join("'s"));
 
                     if (artist == relation.sourceArtist) {
-                        results.source.push(relation);    
+                        results.source.push(relation);
                     } else if (artist == relation.derivativeArtist) {
                         results.derivative.push(relation);
                     } else {
@@ -77,9 +81,21 @@ $(document).ready(function() {
             });
             console.log(results);
         });
+
     }
 
-    
+    function handleFromWhoSampled(data) {
+        console.log(data);
+        for (var track in data)
+            searchForTrack(data[track][0], data[track][1]);
+    }
+
+    function getCoveredTrackFromWhoSampled(artist, track) {
+        var url = 'http://www.whosampled.com/search/covers/?q=' + track;
+        console.log(url);
+    }
+
+
 	function getWhoSampledArtistFromEchoNest(api_key, artist) {
         var url = 'http://developer.echonest.com/api/v4/artist/search?api_key=' + api_key + '&callback=?';
         $.getJSON(url,
@@ -135,5 +151,36 @@ $(document).ready(function() {
             error("Unexpected response from server");
         }
         return false;
+    }
+
+    function searchForTrack(artist, track) {
+        var searchString = artist + ' - ' + track;
+        console.log("Search for", searchString);
+        var search = new models.Search(searchString);
+        search.localResults = models.LOCALSEARCHRESULTS.APPEND;
+
+        search.observe(models.EVENT.CHANGE, function() {
+            var results = search.tracks;
+            var fragment = document.createDocumentFragment();
+            if (results.length > 0) {
+                var track = results[0];
+                console.log(track.uri, track.name);
+
+                var single_track_playlist = new models.Playlist();
+                single_track_playlist.add(track);
+                var single_track_player = new views.Player();
+                single_track_player.track = null; // Don't play the track right away
+                single_track_player.context = single_track_playlist;
+
+                sampledTracksHTML.appendChild(single_track_player.node);
+            }
+        });
+
+        search.appendNext();
+    }
+
+    function artistAndTrack(searchResult) {
+        var at = searchResult.split(' sample of ')[1].split("'");
+        return [at.shift(), at.join("'").substring(2)];
     }
 });
