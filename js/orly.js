@@ -38,12 +38,12 @@ $(document).ready(function() {
             currentTrack.name,
             handleFromWhoSampled('sample', sampledSourceTracksHTML, sampledDerivativeTracksHTML)
         );
-        getTrackFromWhoSampled(
-            'cover',
-            currentTrack.artists[0].name,
-            currentTrack.name,
-            handleFromWhoSampled('cover', coveredSourceTracksHTML, coveredDerivativeTracksHTML)
-        );
+        // getTrackFromWhoSampled(
+        //     'cover',
+        //     currentTrack.artists[0].name,
+        //     currentTrack.name,
+        //     handleFromWhoSampled('cover', coveredSourceTracksHTML, coveredDerivativeTracksHTML)
+        // );
     });
 
     function updatePageWithTrackDetails() {
@@ -51,10 +51,12 @@ $(document).ready(function() {
         if (currentTrack == null) {
             currentSongTitleHTML.innerHTML = 'No track currently playing';
             currentArtistNameHTML.innerHTML = '';
+            currentAlbumartHTML.innerHTML = '';
         } else {
             console.log(currentTrack);
             currentSongTitleHTML.innerHTML = currentTrack.name;
             currentArtistNameHTML.innerHTML = currentTrack.artists[0].name;
+            currentAlbumartHTML.innerHTML = '';
             addPlayer(currentTrack, currentAlbumartHTML);
         }
     }
@@ -119,6 +121,8 @@ $(document).ready(function() {
     function handleFromWhoSampled(relationType, sourcesContainer, derivativesContainer) {
         return function(data) {
             // console.log(data);
+            // sourcesContainer.innerHTML = '';
+            // derivativesContainer.innerHTML = '';
             var derivatives = data.derivative;
             var sources = data.source;
             for (var track in derivatives)
