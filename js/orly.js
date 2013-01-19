@@ -14,11 +14,9 @@ $(document).ready(function() {
 
     $.ajaxSetup({traditional: true, cache: true});
 
-    updatePageWithTrackDetails();
-
     models.player.observe(models.EVENT.CHANGE, function(event) {
         if (event.data.curtrack == true) {
-            // updatePageWithTrackDetails();
+            updatePageWithTrackDetails();
         }
     });
 
@@ -27,8 +25,20 @@ $(document).ready(function() {
     });
 
     $('#get-playing-track').click(function(e){
-        console.log("button click");
         updatePageWithTrackDetails();
+
+        getTrackFromWhoSampled(
+            'sample',
+            currentTrack.artists[0].name,
+            currentTrack.name,
+            handleFromWhoSampled('sample', sampledSourceTracksHTML, sampledDerivativeTracksHTML)
+        );
+        getTrackFromWhoSampled(
+            'cover',
+            currentTrack.artists[0].name,
+            currentTrack.name,
+            handleFromWhoSampled('cover', coveredSourceTracksHTML, coveredDerivativeTracksHTML)
+        );
     });
 
     function updatePageWithTrackDetails() {
@@ -38,23 +48,7 @@ $(document).ready(function() {
         } else {
             currentHTML.innerHTML = 'Now playing: ' + currentTrack;
         }
-    }
-
-    // getWhoSampledArtistFromEchoNest(en_api_key, currentTrack.artists[0].name);
-    // getWhoSampledTrackFromEchoNest(en_api_key, currentTrack.artists[0], currentTrack.name);
-
-    getTrackFromWhoSampled(
-        'sample',
-        currentTrack.artists[0].name,
-        currentTrack.name,
-        handleFromWhoSampled('sample', sampledSourceTracksHTML, sampledDerivativeTracksHTML)
-    );
-    getTrackFromWhoSampled(
-        'cover',
-        currentTrack.artists[0].name,
-        currentTrack.name,
-        handleFromWhoSampled('cover', coveredSourceTracksHTML, coveredDerivativeTracksHTML)
-    );
+    }    
 
     function getTrackFromWhoSampled(searchType, artist, track, callback) {
         var results = {
@@ -72,7 +66,7 @@ $(document).ready(function() {
 
 
         var url = 'http://www.whosampled.com/search/' + searchType + 's/?q=' + searchArtist + '%20' + searchTrack;
-        console.log(url);
+        // console.log(url);
 
         $.get(url, function(data) {
             var searchResults = $(data).find('#mainSectionLeft')[0];
@@ -115,7 +109,7 @@ $(document).ready(function() {
 
     function handleFromWhoSampled(relationType, sourcesContainer, derivativesContainer) {
         return function(data) {
-            console.log(data);
+            // console.log(data);
             var derivatives = data.derivative;
             var sources = data.source;
             for (var track in derivatives)
@@ -123,69 +117,6 @@ $(document).ready(function() {
             for (var track in sources)
                 searchForTrack(sources[track]['derivativeArtist'], sources[track]['derivativeTrack'], derivativesContainer);
         }
-    }
-
-    function getCoveredTrackFromWhoSampled(artist, track) {
-        var url = 'http://www.whosampled.com/search/covers/?q=' + track;
-        console.log(url);
-    }
-
-
-	function getWhoSampledArtistFromEchoNest(api_key, artist) {
-        var url = 'http://developer.echonest.com/api/v4/artist/search?api_key=' + api_key + '&callback=?';
-        $.getJSON(url,
-            {
-                name: artist,
-                format: 'jsonp',
-                limit: true,
-                results: 1,
-                bucket: ['id:whosampled']
-            },
-        function(data) {
-            if (checkResponse(data)) {
-            	var artist_id = data.response.artists[0].foreign_ids[0].foreign_id.split(':')[2];
-            	var artist_url = 'http://www.whosampled.com/artist/view/' + artist_id;
-				var currentHTML = document.getElementById('artist');
-				currentHTML.innerHTML = '<a href="' + artist_url + '">' + artist + '</a>';
-            } else {
-                $('#error').text("trouble getting results");
-            }
-        });
-    }
-
-    function getWhoSampledTrackFromEchoNest(api_key, artist, title) {
-        var url = 'http://developer.echonest.com/api/v4/song/search?api_key=' + api_key + '&callback=?';
-        $.getJSON(url,
-            {
-                artist: artist,
-                title: title,
-                format: 'jsonp',
-                limit: true,
-                results: 1,
-                bucket: ['id:whosampled', 'tracks']
-            },
-        function(data) {
-            if (checkResponse(data)) {
-                var currentHTML = document.getElementById('track');
-				currentHTML.innerHTML = data.response.songs[0].tracks[0].foreign_id;
-            } else {
-                $('#error').text("trouble getting results");
-            }
-        });
-    }
-
-    function checkResponse(data) {
-        if (data.response) {
-            if (data.response.status.code != 0) {
-                $('#error').text("Whoops... Unexpected error from server. " + data.response.status.message);
-                console.log(JSON.stringify(data.response));
-            } else {
-                return true;
-            }
-        } else {
-            error("Unexpected response from server");
-        }
-        return false;
     }
 
     function searchForTrack(artist, track, container) {
