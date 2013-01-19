@@ -34,6 +34,11 @@ $(document).ready(function() {
     });
 
     $('#get-playing-track').click(function(e){
+        sampledSourceTracksFound = false;
+        sampledDerivativeTracksFound = false;
+        coveredSourceTracksFound = false;
+        coveredDerivativeTracksFound = false;
+        
         updatePageWithTrackDetails();
 
         getTrackFromWhoSampled(
