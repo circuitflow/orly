@@ -10,7 +10,7 @@ $(document).ready(function() {
 	var currentSongTitleHTML = document.getElementById('current-song-title');
     var currentArtistNameHTML = document.getElementById('current-artist-name');
     var currentAlbumartHTML = document.getElementById('albumart');
-    
+
     var sampledSourceTracksHTML = document.getElementById('sampled-source-tracks');
     var sampledDerivativeTracksHTML = document.getElementById('sampled-derivative-tracks');
     var coveredSourceTracksHTML = document.getElementById('covered-source-tracks');
@@ -20,9 +20,9 @@ $(document).ready(function() {
     var sampledDerivativeTracksFound = false;
     var coveredSourceTracksFound = false;
     var coveredDerivativeTracksFound = false;
-    
+
     $.ajaxSetup({traditional: true, cache: true});
-    
+
     models.player.observe(models.EVENT.CHANGE, function(event) {
         if (event.data.curtrack == true) {
             // updatePageWithTrackDetails();
@@ -107,9 +107,9 @@ $(document).ready(function() {
                     relation['sourceArtist'] = $.trim(source.shift().split('feat.')[0]);
                     relation['sourceTrack'] = $.trim(source.join("'s"));
 
-                    if (relation.sourceArtist.indexOf(artist) > -1 || artist.indexOf(relation.sourceArtist) > -1) {
+                    if (relation.sourceArtist.toLowerCase().indexOf(artist.toLowerCase()) > -1 || artist.toLowerCase().indexOf(relation.sourceArtist.toLowerCase()) > -1) {
                         results.source.push(relation);
-                    } else if (relation.derivativeArtist.indexOf(artist) > -1 || artist.indexOf(relation.derivativeArtist) > -1) {
+                    } else if (relation.derivativeArtist.toLowerCase().indexOf(artist.toLowerCase()) > -1 || artist.toLowerCase().indexOf(relation.derivativeArtist.toLowerCase()) > -1) {
                         results.derivative.push(relation);
                     } else {
                         results.unknown.push(relation);
@@ -126,7 +126,7 @@ $(document).ready(function() {
 
             var derivatives = data.derivative;
             var sources = data.source;
-            
+
             for (var track in derivatives) {
                 searchForTrack(derivatives[track]['sourceArtist'], derivatives[track]['sourceTrack'], sourcesContainer);
             }
@@ -173,7 +173,7 @@ $(document).ready(function() {
                     container.innerHTML = '';
                 }
             break;
-            case 'covered-derivative-tracks': 
+            case 'covered-derivative-tracks':
                 if (!coveredDerivativeTracksFound) {
                     coveredDerivativeTracksFound = true;
                     container.innerHTML = '';
@@ -190,9 +190,9 @@ $(document).ready(function() {
         single_track_player.track = null; // Don't play the track right away
         single_track_player.context = single_track_playlist;
 
-        var trackDiv = document.createElement('div');        
+        var trackDiv = document.createElement('div');
         trackDiv.appendChild(single_track_player.node);
-       
+
         if (hasName) {
             var trackInfo = document.createElement('div');
             var nameSpan = document.createElement('span');
@@ -202,7 +202,7 @@ $(document).ready(function() {
             $(trackDiv).addClass('result');
 
             container.appendChild(trackDiv);
-                        
+
             var clearDiv = document.createElement('div');
             $(clearDiv).addClass('clear');
             container.appendChild(clearDiv);
