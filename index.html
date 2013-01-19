@@ -5,9 +5,41 @@
         <link rel="stylesheet" type="text/css" href="sp://resources/css/api.css">
         <link rel="stylesheet" type="text/css" href="sp://resources/css/player.css">
         <link rel="stylesheet" type="text/css" href="sp://resources/css/list.css">
+        <!-- Project CSS files -->
+        <link rel="stylesheet" type="text/css" href="css/main.css">
     </head>
     <body>
         <div id="wrapper">
+            <header>
+                <img  id="logo" src="img/logo.png" alt="ORLY">
+                <div id="analyzebutton">
+                    <button class="sp-button">Get playing track</button>
+                </div>
+            </header>
+            <div class="clear"></div>
+            <div id="focusedtrack">
+                <div class="col" id="focusedtext">            
+                    <div id="trackmeta">
+                        <h1>Song Title</h1>
+                        <h2>Artist Name</h2>
+                    </div>
+                </div>
+                <div class="col" id="focusedimg">
+                    <div id="albumart"></div>
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div id="results">
+                <div id="sampledby" class="col">
+                    <h2>Sampled by</h2>
+                    <div class="result">
+                        <div id="smallalbum"></div>
+                    </div>
+                </div>
+                <div id="issampled" class="col">
+                    <h2>Samples</h2>
+                </div>
+            </div>
             <div class="section">
                 <div class="html-snippet" data-container="html">
                     <div id="np"></div>
