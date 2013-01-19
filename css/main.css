@@ -104,7 +104,6 @@ header{
 
 #results h2{
 	font-size: 2em;
-	margin-bottom: 20px;
 }
 
 #sampledby{
@@ -168,5 +167,14 @@ header{
 	width: 75%;
 	padding-top: 15px;
 	margin-top: 15px;
-	border-bottom: 1px dotted;
+	border-bottom: 2px dashed;
+	margin-bottom: 20px;
+}
+
+footer{
+	text-align: center;
+}
+
+.resultbox{
+	min-height: 64px;
 }
