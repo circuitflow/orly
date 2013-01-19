@@ -1,0 +1,115 @@
+*{
+	padding: 0px;
+	margin: 0px;
+}
+
+html,body{
+	width: 100%;
+}
+
+#wrapper{
+	padding: 20px;
+}
+
+header{
+	width: 100%;
+	height: 90px;
+	clear: none;
+}
+
+#logo{
+	float: left;
+	display: inline;
+}
+
+#analyzebutton{
+	float: right;
+	display: inline;
+}
+
+#songsearch{
+	float: right;
+	display: inline;
+	margin-top: 50%;
+}
+
+#focusedtrack{
+	clear: none;
+	padding-top: 40px;
+	padding-bottom: 40px;
+	width: 100%;
+	height: auto;
+	overflow: auto;
+}
+
+#focusedtext{
+	float: left;
+	height: auto;
+}
+
+#focusedimg{
+	float: right;
+	height: auto;
+}
+
+#trackmeta{
+
+}
+
+#trackmeta h1{
+	font-size: 4em;
+	margin-bottom: 40px;
+}
+
+#trackmeta h2{
+	font-size: 3em;
+}
+
+#albumart{
+	width: 200px;
+	height: 200px;
+	
+}
+
+.smallalbum{
+	width: 128px;
+	width: 128px;
+	float: left;
+}
+
+.result{
+	display: inline;
+}
+
+.resultmeta{
+	float: left;
+}
+
+#results{
+	width: 100%;
+	background-color: gray;
+}
+
+#sampledby{
+	float: left;
+}
+
+#issampled{
+	float: right;
+}
+
+.col{
+	width: 50%;
+	display: inline;
+
+}
+
+.clear{
+	clear: both;
+}
+
+.sp-player {
+  display: block !important; 
+  height: 100% !important; 
+  width: 100% !important;
+}
