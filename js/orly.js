@@ -12,7 +12,10 @@ $(document).ready(function() {
 	var currentTrack = player.track;
 
 	var currentHTML = document.getElementById('np');
-    var sampledTracksHTML = document.getElementById('sampled-tracks');
+    var sampledSourceTracksHTML = document.getElementById('sampled-source-tracks');
+    var sampledDerivativeTracksHTML = document.getElementById('sampled-derivative-tracks');
+    var coveredSourceTracksHTML = document.getElementById('covered-source-tracks');
+    var coveredDerivativeTracksHTML = document.getElementById('covered-derivative-tracks');
 
 	if (currentTrack == null) {
 		currentHTML.innerHTML = 'No track currently playing';
@@ -24,8 +27,18 @@ $(document).ready(function() {
     // getWhoSampledArtistFromEchoNest(en_api_key, currentTrack.artists[0].name);
     // getWhoSampledTrackFromEchoNest(en_api_key, currentTrack.artists[0], currentTrack.name);
 
-    getTrackFromWhoSampled('sample', currentTrack.artists[0].name, currentTrack.name, handleFromWhoSampled('sample'));
-    getTrackFromWhoSampled('cover', currentTrack.artists[0].name, currentTrack.name, handleFromWhoSampled('cover'));
+    getTrackFromWhoSampled(
+        'sample',
+        currentTrack.artists[0].name,
+        currentTrack.name,
+        handleFromWhoSampled('sample', sampledSourceTracksHTML, sampledDerivativeTracksHTML)
+    );
+    getTrackFromWhoSampled(
+        'cover',
+        currentTrack.artists[0].name,
+        currentTrack.name,
+        handleFromWhoSampled('cover', coveredSourceTracksHTML, coveredDerivativeTracksHTML)
+    );
 
     function getTrackFromWhoSampled(searchType, artist, track, callback) {
         var results = {
@@ -84,15 +97,15 @@ $(document).ready(function() {
 
     }
 
-    function handleFromWhoSampled(relationType) {
+    function handleFromWhoSampled(relationType, sourcesContainer, derivativesContainer) {
         return function(data) {
             console.log(data);
             var derivatives = data.derivative;
             var sources = data.source;
             for (var track in derivatives)
-                searchForTrack(derivatives[track]['sourceArtist'], derivatives[track]['sourceTrack']);
+                searchForTrack(derivatives[track]['sourceArtist'], derivatives[track]['sourceTrack'], sourcesContainer);
             for (var track in sources)
-                searchForTrack(sources[track]['derivativeArtist'], sources[track]['derivativeTrack']);
+                searchForTrack(sources[track]['derivativeArtist'], sources[track]['derivativeTrack'], derivativesContainer);
         }
     }
 
@@ -159,7 +172,7 @@ $(document).ready(function() {
         return false;
     }
 
-    function searchForTrack(artist, track) {
+    function searchForTrack(artist, track, container) {
         var searchString = artist + ' - ' + track;
         console.log("Search for", searchString);
         var search = new models.Search(searchString);
@@ -179,7 +192,7 @@ $(document).ready(function() {
                 single_track_player.track = null; // Don't play the track right away
                 single_track_player.context = single_track_playlist;
 
-                sampledTracksHTML.appendChild(single_track_player.node);
+                container.appendChild(single_track_player.node);
             }
         });
 
