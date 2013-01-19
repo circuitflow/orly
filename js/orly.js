@@ -17,72 +17,71 @@ $(document).ready(function() {
 	} else {
 		currentHTML.innerHTML = 'Now playing: ' + currentTrack;
 	}
-    console.log(currentTrack);
-    getSampledTrackFromWhoSampled(currentTrack.artists[0], currentTrack.name);
+    
+    // getWhoSampledArtistFromEchoNest(en_api_key, currentTrack.artists[0].name);
+    // getWhoSampledTrackFromEchoNest(en_api_key, currentTrack.artists[0], currentTrack.name);
+    
+    getTrackFromWhoSampled('sample', currentTrack.artists[0].name, currentTrack.name);
+    getTrackFromWhoSampled('cover', currentTrack.artists[0].name, currentTrack.name);
+    
+    function getTrackFromWhoSampled(searchType, artist, track) {
+        var results = {
+            'source':[], 
+            'derivative':[],
+            'unknown':[],
+            'searchType': searchType
+        };
 
-	// getWhoSampledArtistFromEchoNest(en_api_key, currentTrack.artists[0]);
-	// getWhoSampledTrackFromEchoNest(en_api_key, currentTrack.artists[0], currentTrack.name);
-	
-    function getSampledTrackFromWhoSampled(artist, track) {
-        
-        // track = track.replace("'", '');
-        
-        track = track.replace('&apos;', "'");
-        track = track.replace(/[^a-zA-Z0-9-_ ]/g, '');
-        // track = track.replace(/[]/g, ' ');
-        track = track.split('-')[0];
-        
-        console.log(track);
-        
-        track = encodeURI(track);
-        // track = encodeURIComponent(track);
-        
-        var url = 'http://www.whosampled.com/search/samples/?q=' + track;
+        // console.log(artist);
+        // console.log(track);
 
-        console.log(url);
+        var searchArtist = encodeURI($.trim(artist.replace('&apos;', "'").replace(/[^a-zA-Z0-9-_ ]/g, '').split('-')[0])); 
+        var searchTrack = encodeURI($.trim(track.replace('&apos;', "'").replace(/[^a-zA-Z0-9-_ ]/g, '').split('-')[0]));
+
+        var url = 'http://www.whosampled.com/search/' + searchType + 's/?q=' + searchArtist + '%20' + searchTrack;
+        // console.log(url);
 
         $.get(url, function(data) {
             var searchResults = $(data).find('#mainSectionLeft')[0];
             searchResults = $(searchResults).find('div')[5]; // innerContent2
             searchResults = $(searchResults).find('tbody')[0];
             searchResults = $(searchResults).find('tr');
-            // console.log(searchResults);
+            
             $(searchResults).each(function(){
+                var relation = {};
+
                 var searchResult = $(this).find('td')[2];
                 searchResult = $(searchResult).find('a');
                 searchResult = $(searchResult).text();
-                console.log(searchResult.split('sample of'));
 
+                if (searchResult) {
+                    var splitKey = searchType + ' of'
+                    searchResult = searchResult.split(splitKey);
+                    
+                    var derivative = searchResult[0].split("'s");
+                    relation['derivativeArtist'] = $.trim(derivative.shift().split('feat.')[0]);
+                    relation['derivativeTrack'] = $.trim(derivative.join("'s"));
+                    
+                    var source = searchResult[1].split("'s");
+                    relation['sourceArtist'] = $.trim(source.shift().split('feat.')[0]);
+                    relation['sourceTrack'] = $.trim(source.join("'s"));
+
+                    if (artist == relation.sourceArtist) {
+                        results.source.push(relation);    
+                    } else if (artist == relation.derivativeArtist) {
+                        results.derivative.push(relation);
+                    } else {
+                        results.unknown.push(relation);
+                    }
+                }
             });
-
-
-            // var elements = $(".result").html(data)[0].getElementById('mainSectionLeft');
-            // console.log(elements);
-            // for(var i = 0; i < elements.length; i++) {
-               // var theText = elements[i].firstChild.nodeValue;
-               // Do something here
-            // }
-
-            // var htmlCode = $(data).;
-            // console.log(htmlCode[3]);
-
-            // $('.result').html(data);
-            // console.log($('.result'));
-            // var results = $('.result').find('mainSectionLeft');
-            // console.log(results);
+            console.log(results);
         });
-        
     }
 
-    function getCoveredTrackFromWhoSampled(artist, track) {
-        var url = 'http://www.whosampled.com/search/covers/?q=' + track;
-        console.log(url);
-    }
-
+    
 	function getWhoSampledArtistFromEchoNest(api_key, artist) {
         var url = 'http://developer.echonest.com/api/v4/artist/search?api_key=' + api_key + '&callback=?';
-        // console.log(artist);
-
         $.getJSON(url,
             {
                 name: artist,
@@ -92,7 +91,6 @@ $(document).ready(function() {
                 bucket: ['id:whosampled']
             },
         function(data) {
-            console.log(data);
             if (checkResponse(data)) {
             	var artist_id = data.response.artists[0].foreign_ids[0].foreign_id.split(':')[2];
             	var artist_url = 'http://www.whosampled.com/artist/view/' + artist_id;
@@ -106,8 +104,6 @@ $(document).ready(function() {
 
     function getWhoSampledTrackFromEchoNest(api_key, artist, title) {
         var url = 'http://developer.echonest.com/api/v4/song/search?api_key=' + api_key + '&callback=?';
-        console.log(artist + " - " + title);
-
         $.getJSON(url,
             {
                 artist: artist,
@@ -118,7 +114,6 @@ $(document).ready(function() {
                 bucket: ['id:whosampled', 'tracks']
             },
         function(data) {
-            // console.log(data);
             if (checkResponse(data)) {
                 var currentHTML = document.getElementById('track');
 				currentHTML.innerHTML = data.response.songs[0].tracks[0].foreign_id;
