@@ -142,10 +142,10 @@ $(document).ready(function() {
             var fragment = document.createDocumentFragment();
             if (results.length > 0) {
                 var track = results[0];
-                // console.log(track.uri, track.name);
-                // console.log(track);
 
                 addPlayer(track, container, true);
+        
+
             }
         });
 
@@ -162,8 +162,13 @@ $(document).ready(function() {
         single_track_player.track = null; // Don't play the track right away
         single_track_player.context = single_track_playlist;
 
-        // wrap in div
+
+        // wrap in div with name, etc
         var trackDiv = document.createElement('div');
+        var trackInfo = document.createElement('div');
+        var artistSpan = document.createElement('p');
+        var trackSpan = document.createElement('p');
+
         trackDiv.appendChild(single_track_player.node);
 
         if (noName) {
@@ -172,8 +177,18 @@ $(document).ready(function() {
             trackDiv.appendChild(nameSpan);
         }
 
+        trackSpan.innerHTML = track.name;
+        artistSpan.innerHTML = track.artists[0].name;
+        trackInfo.appendChild(artistSpan);
+        trackInfo.appendChild(trackSpan);
+        trackDiv.appendChild(trackInfo);
+        $(trackDiv).addClass('result');
         container.appendChild(trackDiv);
-        // console.log(trackDiv);
+
+        var clearDiv = document.createElement('div');
+        $(clearDiv).addClass('clear');
+        container.appendChild(clearDiv);
+
     }
 
     function clearResults(relationType) {

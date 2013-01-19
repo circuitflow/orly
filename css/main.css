@@ -77,9 +77,6 @@ header{
 	float: left;
 }
 
-.result{
-	display: inline;
-}
 
 .resultmeta{
 	float: left;
@@ -108,8 +105,28 @@ header{
 	clear: both;
 }
 
-.sp-player {
+
+.sp-player #bigart{
   display: block !important; 
   height: 100% !important; 
   width: 100% !important;
 }
+
+.sp-player .result{
+	display: inline !important;
+}
+
+
+.result{
+	height: auto;
+	text-align: top;
+	clear: none;
+
+}
+
+.result div{
+	float: left !important;
+	display: inline !important;
+	overflow: hidden;
+}
+
