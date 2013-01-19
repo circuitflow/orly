@@ -186,13 +186,24 @@ $(document).ready(function() {
                 console.log(track.uri, track.name);
                 console.log(track);
 
+                // create playlist with track
                 var single_track_playlist = new models.Playlist();
                 single_track_playlist.add(track);
+
+                // create single track player
                 var single_track_player = new views.Player();
                 single_track_player.track = null; // Don't play the track right away
                 single_track_player.context = single_track_playlist;
 
-                container.appendChild(single_track_player.node);
+                // wrap in div with name, etc
+                var trackDiv = document.createElement('div');
+                trackDiv.appendChild(single_track_player.node);
+                var nameSpan = document.createElement('span');
+                nameSpan.innerHTML = track.artists[0].name + ' - ' + track.name;
+                trackDiv.appendChild(nameSpan);
+
+                container.appendChild(trackDiv);
+                console.log(trackDiv);
             }
         });
 
