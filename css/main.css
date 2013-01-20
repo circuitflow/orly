@@ -29,8 +29,9 @@ header{
 }
 
 #analyzebutton{
-	float: right;
-	display: inline;
+	float: none;
+	margin-top: 20px;
+
 }
 
 #curly{
@@ -55,6 +56,18 @@ header{
 	min-height: 200px;
 	height: auto;
 	overflow: auto;
+}
+
+#header-left{
+	float: left;
+}
+
+#header-right{
+	float: right;
+}
+
+#header-right{
+
 }
 
 #focusedtext{
@@ -119,6 +132,8 @@ header{
 .col{
 	width: 50%;
 	display: inline;
+	overflow: hidden;
+	height: auto;
 }
 
 .clear{
@@ -188,29 +203,5 @@ footer{
 .show_on_hover{
 	clear: both;
 	display: none;
-	margin-top: 7px;
-	border: 1px solid gray;
-	background-color: #ECEBE8;
-}
-
-.show_on_hover:hover{
-	box-shadow: 2px 2px black;
-	position: relative;
-	top: -2px;
-	left: -2px;
-}
-
-.show_on_hover:active{
-	box-shadow: none;
-	position: relative;
-	top: 0px;
-	left: 0px;
-}
-
-
-.button-img{
-	padding-top: 4px;
-	padding-left: 3px;
-	padding-right: 3px;
-
+	margin-top: 8px;
 }
