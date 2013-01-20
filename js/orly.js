@@ -112,15 +112,20 @@ $(document).ready(function() {
             'searchType': searchType
         };
         
+        // console.log("Spotify artist: " + artist);
         artist = artist.replace('&amp;', 'and');
         artist = artist.replace('&quot;', '"').replace('&quot;', '"');
-        // console.log(artist);
+        // console.log("post-processed artist: " + artist);
+
+        // getWhoSampledArtistFromEchoNest(en_api_key, artist);
 
         var searchArtist = encodeURI($.trim(artist.replace('&apos;', "'").split(' and ')[0].split('-')[0].split('feat.')[0].replace(/[^a-zA-Z0-9-_ ]/g, '')));
         var searchTrack = encodeURI($.trim(track.replace('&apos;', "'").replace(/[^a-zA-Z0-9-_ ]/g, '').split('-')[0]));
 
+        // console.log("search artist: " + searchArtist);
+
         var url = 'http://www.whosampled.com/search/' + searchType + 's/?q=' + searchArtist + '%20' + searchTrack;
-        console.log(url);
+        // console.log(url);
 
         $.get(url, function(data) {
             var searchResults = $(data).find('#mainSectionLeft')[0];
@@ -297,4 +302,40 @@ $(document).ready(function() {
             }
         }
     }
+
+    function getWhoSampledArtistFromEchoNest(api_key, artist) {
+        var url = 'http://developer.echonest.com/api/v4/artist/search?api_key=' + api_key + '&callback=?';
+        $.getJSON(url,
+            {
+                name: artist,
+                format:'jsonp',
+                limit: true,
+                results: 1,
+                bucket: 'id:whosampled'
+            },
+        function(data) {
+            if (checkResponse(data)) {
+                // console.log(data.response.artists[0]);
+                var artist_id = data.response.artists[0].foreign_ids[0].foreign_id.split(':')[2];
+                var artist_name = data.response.artists[0].name;
+                // console.log("echo nest artist: " + artist_name);
+                // var artist_url = 'http://www.whosampled.com/artist/view/' + artist_id;
+            }
+        });
+    }
+
+    function checkResponse(data) {
+        if (data.response) {
+            if (data.response.status.code != 0) {
+                $('#error').text("Whoops... Unexpected error from server. " + data.response.status.message);
+                console.log(JSON.stringify(data.response));
+            } else {
+                return true;
+            }
+        } else {
+            error("Unexpected response from server");
+        }
+        return false;
+    }
+
 });
