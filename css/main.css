@@ -142,12 +142,13 @@ header{
 	text-align: top;
 	clear: none;
 	margin-top: 10px;
+	height: auto;
+	overflow: hidden;
 }
 
 .result div{
 	float: left !important;
 	display: inline !important;
-	overflow: hidden;
 }
 
 .result div:last-child{
@@ -156,6 +157,8 @@ header{
 	clear: right;
 	width: 50%;
 }
+
+
 
 .right{
 	float: right;
@@ -169,7 +172,7 @@ header{
 	width: 75%;
 	padding-top: 15px;
 	margin-top: 15px;
-	border-bottom: 2px dashed;
+	border-bottom: 2px dashed black;
 	margin-bottom: 20px;
 }
 
@@ -180,4 +183,10 @@ footer{
 
 .resultbox{
 	min-height: 64px;
+}
+
+.show_on_hover{
+	clear: both;
+	display: none;
+	margin-top: 5px;
 }

@@ -61,6 +61,9 @@ $(document).ready(function() {
         } 
     }
 
+ 
+    
+
 
     $('#get-playing-track').click(function(e){
     
@@ -235,16 +238,29 @@ $(document).ready(function() {
         if (hasName) {
             var trackInfo = document.createElement('div');
             var nameSpan = document.createElement('span');
-            nameSpan.innerHTML = '<b>' +track.artists[0].name + '</b><br>' + track.name;
+            nameSpan.innerHTML = '<b>' +track.artists[0].name + '</b><br>' + track.name + '<br>';
             trackInfo.appendChild(nameSpan);
             trackDiv.appendChild(trackInfo);
+
+            var rlyButton = document.createElement('button');
+            $(rlyButton).addClass('sp-button');
+            $(rlyButton).addClass('show_on_hover');
+            rlyButton.innerHTML = "RLY?";
+
+            trackInfo.appendChild(rlyButton);
+
             $(trackDiv).addClass('result');
+
+            $(trackDiv).hover( function() {
+                $(this).find('.show_on_hover').toggle();
+            });
 
             container.appendChild(trackDiv);
 
             var clearDiv = document.createElement('div');
             $(clearDiv).addClass('clear');
             container.appendChild(clearDiv);
+
         }
         else{
             container.appendChild(trackDiv);
@@ -268,4 +284,7 @@ $(document).ready(function() {
             }
         }
     }
+
+
+
 });
