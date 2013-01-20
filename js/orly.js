@@ -25,24 +25,16 @@ $(document).ready(function() {
     $.ajaxSetup({traditional: true, cache: true});
 
     models.player.observe(models.EVENT.CHANGE, function(event) {
-        
-        if (event.data.curtrack == true) {
-            // updatePageWithTrackDetails();
-        }
-
         if (droppedTrack && event.data.curtrack){
             updatePageWithTrackDetails();
             droppedTrack = false;
-            console.log("Upadating from eventlistener");
         }
-
     });
 
     models.application.observe(models.EVENT.ACTIVATE, function(event) {
         // updatePageWithTrackDetails();
     });
 
-    // Handle items 'dropped' on your icon
     models.application.observe(models.EVENT.LINKSCHANGED, handleLinks);
 
     function handleLinks() {
@@ -54,9 +46,6 @@ $(document).ready(function() {
                     droppedTrack = true;
                     player.play(models.Track.fromURI(links[0]));
                     break;
-                default:
-                    // Do nothing unless it's a track
-                    break;       
             }
         } 
     }
@@ -113,10 +102,10 @@ $(document).ready(function() {
             'unknown':[],
             'searchType': searchType
         };
-
-        var searchArtist = encodeURI($.trim(artist.replace('&apos;', "'").replace(/[^a-zA-Z0-9-_ ]/g, '').split('-')[0]));
+        artist = artist.replace('&amp;', 'and');
+        console.log(artist);
+        var searchArtist = encodeURI($.trim(artist.replace('&apos;', "'").split(' and ')[0].split('-')[0].split('feat.')[0].replace(/[^a-zA-Z0-9-_ ]/g, '')));
         var searchTrack = encodeURI($.trim(track.replace('&apos;', "'").replace(/[^a-zA-Z0-9-_ ]/g, '').split('-')[0]));
-
 
         var url = 'http://www.whosampled.com/search/' + searchType + 's/?q=' + searchArtist + '%20' + searchTrack;
         console.log(url);
@@ -135,18 +124,17 @@ $(document).ready(function() {
                 searchResult = $(searchResult).text();
 
                 if (searchResult) {
-                    var splitKey = searchType + ' of'
                     console.log(searchResult);
+
+                    var splitKey = searchType + ' of'
                     searchResult = searchResult.split(splitKey);
 
                     var derivative = searchResult[0].split(/'s/);
-                    console.log(derivative);
-                    relation['derivativeArtist'] = $.trim(derivative.shift().split('feat.')[0]);
+                    relation['derivativeArtist'] = $.trim(derivative.shift().replace('&', 'and').split('feat.')[0]);
                     relation['derivativeTrack'] = $.trim(derivative.join("'s"));
 
                     var source = searchResult[1].split(/'s/);
-                    console.log(source);
-                    relation['sourceArtist'] = $.trim(source.shift().split('feat.')[0]);
+                    relation['sourceArtist'] = $.trim(source.shift().replace('&', 'and').split('feat.')[0]);
                     relation['sourceTrack'] = $.trim(source.join("'s"));
 
                     if (relation.sourceArtist.toLowerCase().indexOf(artist.toLowerCase()) > -1 || artist.toLowerCase().indexOf(relation.sourceArtist.toLowerCase()) > -1) {
@@ -158,6 +146,7 @@ $(document).ready(function() {
                     }
                 }
             });
+            console.log(results);
             if ($.isFunction(callback)) callback(results);
         });
     }
@@ -182,12 +171,13 @@ $(document).ready(function() {
         var searchString = artist + ' - ' + track;
         var search = new models.Search(searchString);
         // search.localResults = models.LOCALSEARCHRESULTS.IGNORE;
-
+        // console.log(search);
         search.observe(models.EVENT.CHANGE, function() {
             var results = search.tracks;
             var fragment = document.createDocumentFragment();
             if (results.length > 0) {
                 var track = results[0];
+                // console.log(track);
                 addPlayer(container, track, true);
             }
         });
