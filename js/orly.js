@@ -20,26 +20,73 @@ $(document).ready(function() {
     var sampledDerivativeTracksFound = false;
     var coveredSourceTracksFound = false;
     var coveredDerivativeTracksFound = false;
+    var droppedTrack = false;
 
     $.ajaxSetup({traditional: true, cache: true});
 
     models.player.observe(models.EVENT.CHANGE, function(event) {
+        
         if (event.data.curtrack == true) {
             // updatePageWithTrackDetails();
         }
+
+        if (droppedTrack && event.data.curtrack){
+            updatePageWithTrackDetails();
+            droppedTrack = false;
+            console.log("Upadating from eventlistener");
+        }
+
     });
 
     models.application.observe(models.EVENT.ACTIVATE, function(event) {
         // updatePageWithTrackDetails();
     });
 
+    // Handle items 'dropped' on your icon
+    models.application.observe(models.EVENT.LINKSCHANGED, handleLinks);
+
+    function handleLinks() {
+        var links = models.application.links;
+
+        if(links.length) {
+            switch(links[0].split(":")[1]) {
+                case "track":
+                    droppedTrack = true;
+                    player.play(models.Track.fromURI(links[0]));
+                    break;
+                default:
+                    // Do nothing unless it's a track
+                    break;       
+            }
+        } 
+    }
+
+
     $('#get-playing-track').click(function(e){
+    
+        updatePageWithTrackDetails();
+    
+    });
+
+    function updatePageWithTrackDetails() {
+    
+        currentTrack = player.track;
+
         sampledSourceTracksFound = false;
         sampledDerivativeTracksFound = false;
         coveredSourceTracksFound = false;
         coveredDerivativeTracksFound = false;
-        
-        updatePageWithTrackDetails();
+
+        if (currentTrack == null) {
+            currentSongTitleHTML.innerHTML = 'No track currently playing';
+            currentArtistNameHTML.innerHTML = '';
+            currentAlbumartHTML.innerHTML = '';
+        } else {
+            currentSongTitleHTML.innerHTML = currentTrack.name;
+            currentArtistNameHTML.innerHTML = currentTrack.artists[0].name;
+            currentAlbumartHTML.innerHTML = '';
+            addPlayer(currentAlbumartHTML, currentTrack);
+        }
 
         getTrackFromWhoSampled(
             'sample',
@@ -53,20 +100,7 @@ $(document).ready(function() {
             currentTrack.name,
             handleFromWhoSampled('cover', coveredSourceTracksHTML, coveredDerivativeTracksHTML)
         );
-    });
 
-    function updatePageWithTrackDetails() {
-        currentTrack = player.track;
-        if (currentTrack == null) {
-            currentSongTitleHTML.innerHTML = 'No track currently playing';
-            currentArtistNameHTML.innerHTML = '';
-            currentAlbumartHTML.innerHTML = '';
-        } else {
-            currentSongTitleHTML.innerHTML = currentTrack.name;
-            currentArtistNameHTML.innerHTML = currentTrack.artists[0].name;
-            currentAlbumartHTML.innerHTML = '';
-            addPlayer(currentAlbumartHTML, currentTrack);
-        }
     }
 
     function getTrackFromWhoSampled(searchType, artist, track, callback) {

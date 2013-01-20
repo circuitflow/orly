@@ -21,7 +21,7 @@
 	  "api": "0.2.3",
 	  "util": "0.1.0",
 	  "resources": "0.2.2"
-  },
+  	},
 	"RequiredInterface": 1,
 	"RequiredPermissions": [
 	    "http://www.whosampled.com"
@@ -29,5 +29,8 @@
 	"SupportedLanguages": [
 		"en"
 	],
-	"VendorIdentifier": "com.orly"
+	"VendorIdentifier": "com.orly",
+	"AcceptedLinkTypes": [
+    "track"
+	]
 }

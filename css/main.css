@@ -11,7 +11,6 @@ html,body{
 #wrapper{
 	padding: 20px;
 	box-sizing: border-box;
-	padding-bottom: 40px;
 	overflow: hidden;
 }
 
@@ -100,6 +99,9 @@ header{
 
 #results{
 	width: 100%;
+	height: auto;
+	margin-bottom: 40px;
+	overflow: hidden;
 }
 
 #results h2{
@@ -173,7 +175,7 @@ header{
 
 footer{
 	text-align: center;
-	margin-bottom: 10px;
+	clear: both;
 }
 
 .resultbox{
