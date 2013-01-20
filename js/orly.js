@@ -245,10 +245,10 @@ $(document).ready(function() {
             trackDiv.appendChild(trackInfo);
 
             var rlyButton = document.createElement('button');
-            $(rlyButton).addClass('sp-button');
+            //$(rlyButton).addClass('sp-button');
             $(rlyButton).addClass('show_on_hover');
             rlyButton.track = track;
-            rlyButton.innerHTML = "RLY?";
+            rlyButton.innerHTML = '<img src="img/rlyButton.png"/ class="button-img">';
 
             trackInfo.appendChild(rlyButton);
 
