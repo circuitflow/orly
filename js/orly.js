@@ -5,6 +5,7 @@ $(document).ready(function() {
 	var views = sp.require('$api/views');
 	var player = models.player;
 	var en_api_key = '52HAPO5HSDDRQLLJT';
+    
     var currentTrack = player.track;
 
 	var currentSongTitleHTML = document.getElementById('current-song-title');
@@ -20,8 +21,12 @@ $(document).ready(function() {
     var sampledDerivativeTracksFound = false;
     var coveredSourceTracksFound = false;
     var coveredDerivativeTracksFound = false;
+
+    var clicked = false;
     var changeTrack = false;
     var entryPoint = true;
+
+
 
     if(entryPoint){
         updatePageWithTrackDetails();
@@ -31,8 +36,10 @@ $(document).ready(function() {
     $.ajaxSetup({traditional: true, cache: true});
 
     models.player.observe(models.EVENT.CHANGE, function(event) {
+        // console.log(event);
         if (changeTrack && event.data.curtrack){
             updatePageWithTrackDetails();
+            clicked = false;
             changeTrack = false;
         }
     });
@@ -55,10 +62,6 @@ $(document).ready(function() {
             }
         } 
     }
-
- 
-    
-
 
     $('#get-playing-track').click(function(e){
     
@@ -108,13 +111,16 @@ $(document).ready(function() {
             'unknown':[],
             'searchType': searchType
         };
+        
         artist = artist.replace('&amp;', 'and');
-        //console.log(artist);
+        artist = artist.replace('&quot;', '"').replace('&quot;', '"');
+        // console.log(artist);
+
         var searchArtist = encodeURI($.trim(artist.replace('&apos;', "'").split(' and ')[0].split('-')[0].split('feat.')[0].replace(/[^a-zA-Z0-9-_ ]/g, '')));
         var searchTrack = encodeURI($.trim(track.replace('&apos;', "'").replace(/[^a-zA-Z0-9-_ ]/g, '').split('-')[0]));
 
         var url = 'http://www.whosampled.com/search/' + searchType + 's/?q=' + searchArtist + '%20' + searchTrack;
-        //console.log(url);
+        console.log(url);
 
         $.get(url, function(data) {
             var searchResults = $(data).find('#mainSectionLeft')[0];
@@ -250,13 +256,16 @@ $(document).ready(function() {
 
             $(trackDiv).hover( function() {
                 $(this).find('.show_on_hover').toggle();
-            });
-
-            $('.show_on_hover').click(function(e) {
-                changeTrack = true;
-                //player.play(e.target.track.fromURI(links[0]));
-                player.play(e.target.track);
-                console.log(e.target.track);
+                $(this).find('.show_on_hover').click(function(e) {
+                    if (!clicked) {
+                        changeTrack = true;
+                        player.track = e.target.track;
+                        // console.log($(this));
+                        // console.log(track);
+                        // console.log(player);    
+                        clicked = true;
+                    }
+                });
             });
 
             container.appendChild(trackDiv);
@@ -288,7 +297,4 @@ $(document).ready(function() {
             }
         }
     }
-
-
-
 });

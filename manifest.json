@@ -24,13 +24,14 @@
   	},
 	"RequiredInterface": 1,
 	"RequiredPermissions": [
-	    "http://www.whosampled.com"
+	    "http://www.whosampled.com",
+	    "http://developer.echonest.com"
 	],
 	"SupportedLanguages": [
 		"en"
 	],
 	"VendorIdentifier": "com.orly",
 	"AcceptedLinkTypes": [
-    "track"
+    	"track"
 	]
 }
