@@ -20,14 +20,20 @@ $(document).ready(function() {
     var sampledDerivativeTracksFound = false;
     var coveredSourceTracksFound = false;
     var coveredDerivativeTracksFound = false;
-    var droppedTrack = false;
+    var changeTrack = false;
+    var entryPoint = true;
+
+    if(entryPoint){
+        updatePageWithTrackDetails();
+        entryPoint = false;
+    }
 
     $.ajaxSetup({traditional: true, cache: true});
 
     models.player.observe(models.EVENT.CHANGE, function(event) {
-        if (droppedTrack && event.data.curtrack){
+        if (changeTrack && event.data.curtrack){
             updatePageWithTrackDetails();
-            droppedTrack = false;
+            changeTrack = false;
         }
     });
 
@@ -43,7 +49,7 @@ $(document).ready(function() {
         if(links.length) {
             switch(links[0].split(":")[1]) {
                 case "track":
-                    droppedTrack = true;
+                    changeTrack = true;
                     player.play(models.Track.fromURI(links[0]));
                     break;
             }
@@ -103,12 +109,12 @@ $(document).ready(function() {
             'searchType': searchType
         };
         artist = artist.replace('&amp;', 'and');
-        console.log(artist);
+        //console.log(artist);
         var searchArtist = encodeURI($.trim(artist.replace('&apos;', "'").split(' and ')[0].split('-')[0].split('feat.')[0].replace(/[^a-zA-Z0-9-_ ]/g, '')));
         var searchTrack = encodeURI($.trim(track.replace('&apos;', "'").replace(/[^a-zA-Z0-9-_ ]/g, '').split('-')[0]));
 
         var url = 'http://www.whosampled.com/search/' + searchType + 's/?q=' + searchArtist + '%20' + searchTrack;
-        console.log(url);
+        //console.log(url);
 
         $.get(url, function(data) {
             var searchResults = $(data).find('#mainSectionLeft')[0];
@@ -124,7 +130,7 @@ $(document).ready(function() {
                 searchResult = $(searchResult).text();
 
                 if (searchResult) {
-                    console.log(searchResult);
+                    //console.log(searchResult);
 
                     var splitKey = searchType + ' of'
                     searchResult = searchResult.split(splitKey);
@@ -146,7 +152,7 @@ $(document).ready(function() {
                     }
                 }
             });
-            console.log(results);
+            //console.log(results);
             if ($.isFunction(callback)) callback(results);
         });
     }
@@ -235,6 +241,7 @@ $(document).ready(function() {
             var rlyButton = document.createElement('button');
             $(rlyButton).addClass('sp-button');
             $(rlyButton).addClass('show_on_hover');
+            rlyButton.track = track;
             rlyButton.innerHTML = "RLY?";
 
             trackInfo.appendChild(rlyButton);
@@ -243,6 +250,13 @@ $(document).ready(function() {
 
             $(trackDiv).hover( function() {
                 $(this).find('.show_on_hover').toggle();
+            });
+
+            $('.show_on_hover').click(function(e) {
+                changeTrack = true;
+                //player.play(e.target.track.fromURI(links[0]));
+                player.play(e.target.track);
+                console.log(e.target.track);
             });
 
             container.appendChild(trackDiv);
